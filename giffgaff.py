@@ -4,6 +4,7 @@ Usage:
     giffgaff USER balance
     giffgaff USER receipts
 """
+import datetime
 import getpass
 import os
 import os.path
@@ -58,7 +59,7 @@ class GiffGaff():
         for tr in p.xpath("//table[@id = 'ordersTable']/tbody/tr"):
             tds = tr.xpath('td')
             out.append(dict(
-                date=tds[0].text_content().strip(),
+                date=datetime.datetime.strptime(tds[0].text_content().strip(), '%d-%b-%Y'),
                 content=tds[1].text_content().strip(),
                 amount=tds[2].text_content().strip(),
                 status=tds[3].text_content().strip(),
@@ -90,7 +91,7 @@ class GiffGaff():
     def fetch_all_vat_receipts(self, out_dir):
         os.makedirs(out_dir, exist_ok=True)
         for o in self.order_history():
-            path = os.path.join(out_dir, '%s.%s.pdf' % (o['date'], o['id']))
+            path = os.path.join(out_dir, '%s.%s.pdf' % (datetime.datetime.strftime(o['date'], '%Y-%m-%d'), o['id']))
 
             if not os.path.exists(path) and o['paid_with'] == 'VISA':
                 print("Downloading to %s" % path)
@@ -110,4 +111,4 @@ def script():
         for k, v in g.balance().items():
             print("%s: %s" % (k, v))
     elif arguments['receipts']:
-        g.fetch_all_vat_receipts('%s_receipts' % arguments['USER'])
+        g.fetch_all_vat_receipts('receipts_%s' % arguments['USER'])
