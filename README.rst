@@ -11,6 +11,10 @@ Install into a local venv::
     python3 -m venv .
     ./bin/pip install -e .
 
-Then run::
+Then to get your current balance information::
 
-    ./bin/giffgaff (my_username) balance
+    ./bin/scrapegaff (my_username) balance
+
+To fill a directory full of VAT receipts::
+
+    ./bin/scrapegaff (my_username) receipts
